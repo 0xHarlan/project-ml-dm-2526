@@ -1,8 +1,5 @@
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import Ridge
-from sklearn.preprocessing import PolynomialFeatures
-from sklearn.pipeline import make_pipeline
 
 # A simple feature engineering using blocks means, stds, simple ratios on S1 sensors & humidity and an attempt of removing
 # humidity bias using the function described under
