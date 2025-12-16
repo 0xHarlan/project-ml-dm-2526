@@ -4,6 +4,7 @@ import pandas as pd
 import xgboost as xgb
 from main import sample_error, challenge_metric, class_distribution
 
+# A class for unit testing that ended up not being used as much as it should have
 class UnitTests(unittest.TestCase):
 
     def test_sample_error(self):

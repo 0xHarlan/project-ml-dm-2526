@@ -33,6 +33,7 @@ def distribution_visualization(df: pd.DataFrame, threshold: float):
     plt.show()
     #plt.savefig("class_distribution.pdf", bbox_inches='tight')
 
+# Correlation heatmap of the sensors
 def sensors_heatmap(x_train: pd.DataFrame):
     plt.figure(figsize=(12, 10))
     correlation = x_train.corr()
@@ -105,6 +106,7 @@ def dataset_preview(df_train, df_test):
     plt.show()
     #plt.savefig("dataset_preview.pdf", bbox_inches='tight')
 
+# Show all graphs at once
 def show_graphs(x_train, y_train, x_test):
     distribution_visualization(class_distribution(y_train.drop(columns=["ID"]), 0.50), 0.50)
     sensors_heatmap(x_train.drop(columns=["ID"]))

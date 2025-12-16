@@ -1,5 +1,7 @@
 import pandas as pd
 
+# Helpers functions
+
 # Loads datasets, from csv to DataFrames ( for future feature engineering/data manipulation )
 def read_datasets(x_train_fname, y_train_fname, x_test_fname) -> pd.DataFrame:    
     x_train = pd.read_csv(x_train_fname)
@@ -35,6 +37,7 @@ def humidity_split(x_train, y_train, size = 0.2):
     mask_train = x_train['Humidity'] <= threshold
     mask_test = x_train['Humidity'] > threshold
 
+    # We apply the masks splitting
     x_train_split = x_train[mask_train]
     y_train_split = y_train[mask_train]
 

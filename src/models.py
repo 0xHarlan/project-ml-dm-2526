@@ -1,17 +1,20 @@
 from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 
+# Common parameters
+
 SEED_THREADS = {
     "random_state": 42,
     "n_jobs": -1 # We use all threads by default
 }
 
-GPU_ACCEL = { # Params xgboost gpu acceleration
+GPU_ACCEL = { # Params xgboost gpu acceleration (not very efficient on the data)
     "tree_method": "hist",
     "device": "cuda",
     "verbosity": 0
 }
 
+# Factory method to get the desired model
 def get_model(model_name: str):
     match model_name:
         case "rfr_default": # Default benchmark model provided by the challenge

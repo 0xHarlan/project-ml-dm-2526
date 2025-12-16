@@ -19,7 +19,7 @@ from src.metrics import *
 logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
-# Constatns
+# Constants
 DATA_DIR = Path("datasets")
 X_TRAIN_PATH = DATA_DIR / "x_train_T9QMMVq.csv"
 Y_TRAIN_PATH = DATA_DIR / "y_train_R0MqWmu.csv"
@@ -78,6 +78,7 @@ def optuna_hyperparameters_optimization(x_train, y_train, n_trials=300):
 
     return study.best_params
 
+# Our simple validation process, a 80/20 split using humidity threshold as group splitting
 def simple_validate_model(model, x_train, y_train):
     model_copy = clone(model) # we make sure we use a copy of the model
 
@@ -94,21 +95,23 @@ def simple_validate_model(model, x_train, y_train):
 
     return score
 
+# Cross validation process, 5 folds grouped by humidity values 
 def cross_validate_model(model, x_train, y_train, folds = 5, engineer = False):
     LOGGER.info(f"Starting {folds}-fold (on humidity groups) cross-validation...")
 
     X = x_train.drop(columns = ["ID"])
     Y = y_train.drop(columns = ["ID"])
 
-    if (engineer):
+    if (engineer): # If needed we call the feature engineering function that takes and transforms the dataFrame
         X = feature_engineering(X)
 
     groups = pd.qcut(X['Humidity'], q=folds, labels=False)
-    gkf = GroupKFold(n_splits=folds)
+    gkf = GroupKFold(n_splits=folds) # K folding using groups on humidity
 
     scores = []
     i = 1
     for train_idx, val_idx in gkf.split(X, Y, groups=groups):
+        # Just like we used in TP
 
         X_train_fold = X.iloc[train_idx]
         Y_train_fold = Y.iloc[train_idx]
@@ -121,6 +124,7 @@ def cross_validate_model(model, x_train, y_train, folds = 5, engineer = False):
         model_copy.fit(X_train_fold, Y_train_fold)
         predictions = np.clip(model_copy.predict(X_val_fold), 0, 1)
 
+        # we calculate the score using the challenge metric
         score = challenge_metric(predictions, Y_val_fold.values)
         scores.append(score)
 
@@ -138,7 +142,9 @@ def cross_validate_model(model, x_train, y_train, folds = 5, engineer = False):
         'std': std
     }
 
+# Helper function to generate a submission using a specific model
 def generate_submission(model, x_train, y_train, x_test, engineer=False):
+
     LOGGER.info(f"Generating submission for model: {model}")
 
     X_train_full = x_train.drop(columns=["ID"])
@@ -150,8 +156,9 @@ def generate_submission(model, x_train, y_train, x_test, engineer=False):
         X_train_full = feature_engineering(X_train_full)
         X_test_full  = feature_engineering(X_test_full)
 
-    model = clone(model)
+    model = clone(model) # we make sure to clone the model everytime we have to use it to avoid data leakage
 
+    # Similar to validation functions but this time we train on the full dataset and predict on x_test
     model.fit(X_train_full, Y_train_full)
 
     predictions = model.predict(X_test_full)
@@ -216,7 +223,6 @@ def main():
     #generate_submission(get_model("rfr_best_submission"), x_train, y_train, x_test, engineer=True)
     #optuna_hyperparameters_optimization(x_train, y_train)
     
-
 
 if __name__ == "__main__":
     main()
